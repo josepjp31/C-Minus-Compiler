@@ -1,5 +1,5 @@
 /****************************************************/
-/* File: tiny.l                                     */
+/* File: cminus.l                                     */
 /* Lex specification for C-MINUS                       */
 /* Compiler Construction: Principles and Practice   */
 /* Kenneth C. Louden                                */

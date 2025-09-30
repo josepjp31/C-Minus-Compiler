@@ -14,34 +14,36 @@
  */
 void printToken( TokenType token, const char* tokenString )
 { switch (token)
-  { case IF:
-    case ELSE:
-    case VOID:
-    case INT:
-    case RETURN:
-    case WHILE:
+  { case IF:        /* if */
+    case ELSE:     /* else */
+    case WHILE:    /* while */
+    case RETURN:   /* return */
+    case INT:      /* int */
+    case VOID:     /* void */
       fprintf(listing,
          "reserved word: %s\n",tokenString);
       break;
-    case ASSIGN: fprintf(listing,"=\n"); break;
-    case LT: fprintf(listing,"<\n"); break;
-    case EQ: fprintf(listing,"==\n"); break;
-    case LPAREN: fprintf(listing,"(\n"); break;
-    case RPAREN: fprintf(listing,")\n"); break;
-    case SEMI: fprintf(listing,";\n"); break;
-    case PLUS: fprintf(listing,"+\n"); break;
-    case MINUS: fprintf(listing,"-\n"); break;
-    case TIMES: fprintf(listing,"*\n"); break;
-    case OVER: fprintf(listing,"/\n"); break;
-    case LE: fprintf(listing,"<=\n"); break;
-    case GT: fprintf(listing,">\n"); break;
-    case GE: fprintf(listing,">=\n"); break;
-    case NE: fprintf(listing,"!=\n"); break;
-    case COMMA: fprintf(listing,",\n"); break;
-    case LBRACE: fprintf(listing,"[\n"); break;
-    case RBRACE: fprintf(listing,"]\n"); break;
-    case LCURLY: fprintf(listing,"{\n"); break;
-    case RCURLY: fprintf(listing,"}\n"); break;
+    case ASSIGN: fprintf(listing,"=\n"); break;    /* = */
+    case EQ: fprintf(listing,"==\n"); break;      /* == */
+    case NE: fprintf(listing,"!=\n"); break;      /* != */
+    case LT: fprintf(listing,"<\n"); break;        /* < */
+    case LE: fprintf(listing,"<=\n"); break;       /* <= */
+    case GT: fprintf(listing,">\n"); break;        /* > */
+    case GE: fprintf(listing,">=\n"); break;       /* >= */
+    case PLUS: fprintf(listing,"+\n"); break;      /* + */
+    case MINUS: fprintf(listing,"-\n"); break;    /* - */
+    case TIMES: fprintf(listing,"*\n"); break;    /* * */
+    case OVER: fprintf(listing,"/\n"); break;     /* / */
+    case LPAREN: fprintf(listing,"(\n"); break;   /* ( */
+    case RPAREN: fprintf(listing,")\n"); break;   /* ) */
+    case LBRACE: fprintf(listing,"[\n"); break;    /* [ */
+    case RBRACE: fprintf(listing,"]\n"); break;    /* ] */
+    case LCURLY: fprintf(listing,"{\n"); break;    /* { */
+    case RCURLY: fprintf(listing,"}\n"); break;    /* } */
+    case SEMI: fprintf(listing,";\n"); break;      /* ; */
+    case COMMA: fprintf(listing,",\n"); break;    /* , */
+    
+    case ENDFILE: fprintf(listing,"EOF\n"); break;
     case NUM:
       fprintf(listing,
           "NUM, val= %s\n",tokenString);
