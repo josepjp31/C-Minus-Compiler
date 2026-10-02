@@ -43,20 +43,152 @@ The project is structured into three progressive compiler phases.
 
 ```text
 .
-├── Makefile                    # Build automation script
-├── globals.h                   # Global definitions and AST node structures
-├── main.c                      # Compiler entry point and phase dispatch
-├── scan.c / scan.h             # Manual DFA lexical analyzer
-├── cminus.l                    # Flex lexical specification
-├── cminus.y                    # Bison parser grammar & AST builder
-├── util.c / util.h             # AST tree printing and token utilities
-├── symtab.c / symtab.h         # Stack-based scoped symbol table
-├── analyze.c / analyze.h       # Semantic analyzer and type checker
-├── test.1.txt / test.2.txt    # Sample test suites
-└── results/                    # Expected vs. actual compilation outputs
+├── Makefile                    # Multi-target build script with conditional macro dispatch
+├── test.sh                     # Automated test runner with diff verification & color diagnostics
+├── Dockerfile                  # Containerized build environment (Debian/GCC/Flex/Bison)
+├── src/                        # Compiler source code
+│   ├── globals.h               # Token definitions, AST structures, and compilation flags
+│   ├── main.c                  # Driver program supporting conditional phase flags
+│   ├── scan.c / scan.h         # Manual DFA scanner implementation (Phase 1)
+│   ├── cminus.l                # Flex lexical specification (CRLF-safe)
+│   ├── cminus.y                # Bison LALR(1) grammar & AST builder (Phase 2)
+│   ├── util.c / util.h         # Token string conversion, AST visualizer, and syntax utilities
+│   ├── symtab.c / symtab.h     # Stack-based scoped symbol table implementation
+│   └── analyze.c / analyze.h   # Two-pass semantic type checker & analyzer (Phase 3)
+└── tests/                      # Categorized test suites and reference outputs
+    ├── 1-lexer/                # Lexical scanner test inputs and expected outputs
+    ├── 2-parser/               # Parser test programs and expected AST trees
+    └── 3-semantic/             # Valid programs and negative type-error test cases (.cm)
 ```
 
----
+## Environment & Docker Setup
+
+The project is developed and built inside a **Docker container** so that the build environment (GCC, Flex, Bison, Make, OS tools) is exactly the same on every machine and matches the grading environment. Developing outside Docker is discouraged because of potential setup and toolchain differences.
+
+| | |
+|---|---|
+| **Host OS** | Windows (via WSL 2) or macOS |
+| **Linux distribution (WSL)** | Ubuntu 22.04 (recommended) |
+| **Container image** | `cs-compiler-hw:1.0` (built from the provided `Dockerfile`) |
+| **Container name** | `CminusCompiler` |
+| **Toolchain inside the container** | `gcc`, `flex`, `bison`, `make` |
+
+### 1. Docker on Windows (WSL)
+
+Docker is installed inside WSL, so WSL has to be set up first.
+
+**a) Install WSL with Ubuntu 22.04** (PowerShell as Administrator):
+
+```powershell
+wsl --install Ubuntu-22.04
+```
+
+Create the default UNIX user when prompted (the username does not need to match your Windows username), then start WSL:
+
+```powershell
+wsl
+```
+
+Windows files are reachable from WSL through `/mnt/...` (e.g. `/mnt/c/Users/<user>/Downloads/`).
+
+**b) Install and enable Docker inside WSL:**
+
+```bash
+sudo apt-get update
+sudo apt install docker.io
+sudo systemctl start docker
+sudo systemctl enable docker
+```
+
+**c) Add your user to the `docker` group** (so `sudo` is not needed for every command):
+
+```bash
+sudo usermod -aG docker <user id>
+exit
+```
+
+Then, back in PowerShell, restart WSL so the group change takes effect:
+
+```powershell
+wsl --shutdown
+wsl
+```
+
+> From this point on, run all the commands inside the WSL terminal.
+
+### 2. Docker on macOS
+
+```bash
+brew install --cask docker
+```
+
+Check the installation:
+
+```bash
+docker --version
+```
+
+#### 3. Linux
+
+```bash
+sudo apt-get update
+sudo apt install docker.io git
+sudo systemctl start docker
+sudo usermod -aG docker $USER   # log out and back in afterwards
+```
+
+Check that Docker works:
+
+```bash
+docker --version
+```
+
+### 4. Project Setup
+
+**a) Create a working directory** (any location works as long as you stay consistent):
+
+```bash
+mkdir ~/work
+```
+
+**b) Clone the repository**
+
+```bash
+git clone https://github.com/josepjp31/C-Minus-Compiler.git
+cd C-Minus-Compiler
+```
+> **Windows users:** clone the repository inside the WSL filesystem (e.g. your home folder `~`), not under `/mnt/c/...`. This avoids line-ending (CRLF) problems with `test.sh` and the Makefile.
+
+**c) Build the Docker image:**
+
+From the root of the repository (where the `Dockerfile` is):
+
+```bash
+docker build -t cs-compiler-hw:1.0 .
+```
+
+**d) Start the container**, mounting the current directory as `/work`:
+
+```bash
+docker run --name CminusCompiler --rm -it -v "$PWD":/work -w /work cs-compiler-hw:1.0
+```
+
+This opens a shell inside a container named `CminusCompiler`. Because of `-v "$PWD":/work`, every file you edit on the host is immediately visible in the container (and vice versa), and `--rm` removes the container when you exit it. The image is kept, so the same command can be repeated at any time.
+
+### Daily Workflow
+
+```bash
+# Windows: open WSL, then go to the working directory
+wsl
+cd \\\~/work
+
+# Start the container
+docker run --name CminusCompiler --rm -it -v "$PWD":/work -w /work cs-compiler-hw:1.0
+
+# Inside the container: build, run, test
+make all
+./test.sh
+```
 
 ## Build & Execution
 
@@ -70,27 +202,39 @@ The project is structured into three progressive compiler phases.
 ### Compilation
 
 ```bash
-# Build the complete compiler with semantic analysis
-make cminus_semantic
+# Build all three phase targets
+make all
 
-# Build the syntax analyzer (AST generation only)
-make cminus_parser
+# Build individual targets:
+make cminus_cimpl      # Phase 1: Manual DFA Lexical Analyzer
+make cminus_parser     # Phase 2: Flex + Bison Syntax Analyzer (AST only)
+make cminus_semantic   # Phase 3: Complete Compiler with Semantic Analyzer
 
-# Build the lexical analyzer (DFA / Flex)
-make cminus_cimpl
+# Clean intermediate objects and binaries
+make clean
 ```
 
 ### Running Tests
 
+#### Running Individual Phases
+
 ```bash
-# Run semantic type check on a program
-./cminus_semantic test.1.txt
+# 1. Scanner — Inspect token stream
+./cminus_cimpl tests/1-lexer/test.1.txt
 
-# Inspect AST output from the parser
-./cminus_parser test.1.txt
+# 2. Parser — Generate and print the AST
+./cminus_parser tests/2-parser/test.1.txt
 
-# Inspect token stream from the scanner
-./cminus_cimpl test.1.txt
+# 3. Semantic Analyzer — Symbol table resolution & type verification
+./cminus_semantic tests/3-semantic/test_1.cm
+```
+#### Automated Test Suite
+```bash
+# Grant execution permissions (if not already set)
+chmod +x test.sh
+
+# Run all test cases with colored pass/fail status
+./test.sh
 ```
 
 ---
