@@ -51,14 +51,14 @@ FILE * code;
 
 /* allocate and set tracing flags */
 int EchoSource = FALSE;
-/* Si NO_PARSE es TRUE (cminus_cimpl), activa la traza de tokens */
+/* If NO_PARSE is TRUE (cminus_cimpl), enable token tracing */
 #if NO_PARSE
 int TraceScan = TRUE;
 #else
 int TraceScan = FALSE;
 #endif
 
-/* Si NO_ANALYZE es TRUE (cminus_parser), imprime el AST por defecto */
+/* If NO_ANALYZE is TRUE (cminus_parser), print the AST by default */
 #if NO_ANALYZE
 int TraceParse = TRUE;
 #else

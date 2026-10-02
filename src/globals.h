@@ -26,7 +26,7 @@
 #define MAXRESERVED 6
 
 
-//* Si YYTOKENTYPE está activo o se define abajo, evitamos duplicar tokens con y.tab.h */
+/* If YYTOKENTYPE is active or defined below, avoid duplicating tokens with y.tab.h */
 #ifndef YYTOKENTYPE
 #define YYTOKENTYPE
 typedef enum 

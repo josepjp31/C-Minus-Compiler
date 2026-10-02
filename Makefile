@@ -12,7 +12,7 @@ OBJS_SEM     = main.o util.o lex.yy.o y.tab.o symtab.o analyze.o
 .PHONY: all clean
 all: cminus_semantic cminus_parser cminus_cimpl
 
-# --- Ejecutables ---
+# --- Executables ---
 
 cminus_semantic: $(OBJS_SEM)
 	$(CC) $(CFLAGS) -g $(OBJS_SEM) -o $@ -lfl
@@ -23,7 +23,7 @@ cminus_parser: $(OBJS_PARSER)
 cminus_cimpl: $(OBJS_SCANNER)
 	$(CC) $(CFLAGS) $(OBJS_SCANNER) -o $@
 
-# --- Objetos C ---
+# --- C Objects ---
 
 main.o: $(SRCDIR)/main.c $(SRCDIR)/globals.h $(SRCDIR)/util.h $(SRCDIR)/scan.h $(SRCDIR)/parse.h y.tab.h
 	$(CC) $(CFLAGS) -c $(SRCDIR)/main.c -o $@
@@ -49,7 +49,7 @@ symtab.o: $(SRCDIR)/symtab.c $(SRCDIR)/symtab.h $(SRCDIR)/globals.h
 analyze.o: $(SRCDIR)/analyze.c $(SRCDIR)/analyze.h $(SRCDIR)/globals.h $(SRCDIR)/symtab.h
 	$(CC) $(CFLAGS) -g -c $(SRCDIR)/analyze.c -o $@
 
-# --- Flex y Bison ---
+# --- Flex and Bison ---
 
 lex.yy.o: lex.yy.c $(SRCDIR)/scan.h $(SRCDIR)/util.h $(SRCDIR)/globals.h y.tab.h
 	$(CC) $(CFLAGS) -c lex.yy.c -o $@
@@ -65,7 +65,7 @@ y.tab.h: y.tab.c
 y.tab.c: $(SRCDIR)/cminus.y
 	yacc -d -v $(SRCDIR)/cminus.y
 
-# --- Limpieza ---
+# --- Cleanup ---
 
 clean:
 	rm -vf cminus_semantic cminus_parser cminus_cimpl *.o lex.yy.c y.tab.c y.tab.h y.output
