@@ -8,14 +8,27 @@
 #include "globals.h"
 
 /* set NO_PARSE to TRUE to get a scanner-only compiler */
+#ifndef NO_PARSE
 #define NO_PARSE FALSE
+#endif
+
 /* set NO_ANALYZE to TRUE to get a parser-only compiler */
+#ifndef NO_ANALYZE
 #define NO_ANALYZE FALSE
+#endif
 
 /* set NO_CODE to TRUE to get a compiler that does not
  * generate code
  */
+#ifndef NO_CODE
 #define NO_CODE TRUE
+#endif
+/* set NO_CODE to TRUE to get a compiler that does not
+ * generate code
+ */
+#ifndef NO_CODE
+#define NO_CODE TRUE
+#endif
 
 #include "util.h"
 #if NO_PARSE
@@ -38,8 +51,20 @@ FILE * code;
 
 /* allocate and set tracing flags */
 int EchoSource = FALSE;
+/* Si NO_PARSE es TRUE (cminus_cimpl), activa la traza de tokens */
+#if NO_PARSE
+int TraceScan = TRUE;
+#else
 int TraceScan = FALSE;
+#endif
+
+/* Si NO_ANALYZE es TRUE (cminus_parser), imprime el AST por defecto */
+#if NO_ANALYZE
+int TraceParse = TRUE;
+#else
 int TraceParse = FALSE;
+#endif
+
 int TraceAnalyze = TRUE;
 int TraceCode = FALSE;
 

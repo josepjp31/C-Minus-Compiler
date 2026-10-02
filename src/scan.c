@@ -105,7 +105,7 @@ TokenType getToken(void)
                state = IN_NUM;
             else if (isalpha(c))
                state = IN_ID;
-            else if ((c == ' ') || (c == '\t') || (c == '\n'))
+            else if ((c == ' ') || (c == '\t') || (c == '\n') || (c == '\r'))
                save = FALSE; 
             else switch (c)
             {  case EOF:

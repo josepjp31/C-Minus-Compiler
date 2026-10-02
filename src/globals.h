@@ -26,17 +26,19 @@
 #define MAXRESERVED 6
 
 
+//* Si YYTOKENTYPE está activo o se define abajo, evitamos duplicar tokens con y.tab.h */
+#ifndef YYTOKENTYPE
+#define YYTOKENTYPE
 typedef enum 
-    /* book-keeping tokens */
-   {ENDFILE //,ERROR
-    /* reserved words (C-MINUS updated) */
- //   IF, ELSE, WHILE, RETURN, INT, VOID,
-    /* multicharacter tokens */
- //   ID,NUM,
-    /* special symbols (C-MINUS updated)*/
- //   ASSIGN, EQ, NE, LT, LE, GT, GE, PLUS, MINUS, TIMES, OVER, LPAREN, RPAREN, LBRACE, RBRACE, LCURLY, RCURLY, SEMI, COMMA
+   {ENDFILE, ERROR,
+    IF, ELSE, WHILE, RETURN, INT, VOID,
+    ID, NUM,
+    ASSIGN, EQ, NE, LT, LE, GT, GE, PLUS, MINUS, TIMES, OVER, 
+    LPAREN, RPAREN, LBRACE, RBRACE, LCURLY, RCURLY, SEMI, COMMA
    } TokenType;
-
+#else
+typedef int TokenType;
+#endif
 extern FILE* source; /* source code text file */
 extern FILE* listing; /* listing output text file */
 extern FILE* code; /* code text file for TM simulator */

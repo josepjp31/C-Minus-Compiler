@@ -18,8 +18,8 @@ digit       [0-9]
 number      {digit}+
 letter      [a-zA-Z]
 identifier  {letter}+
-newline     \n
-whitespace  [ \t]+
+newline     \r?\n
+whitespace  [ \t\r]+
 %x COMMENT
 
 %%
@@ -39,7 +39,7 @@ whitespace  [ \t]+
 
 
 <COMMENT>"*/"    { BEGIN(INITIAL); }
-<COMMENT>\n      { lineno++; }
+<COMMENT>\r?\n   { lineno++; }
 <COMMENT>.       { /* Ignore any other character */ }
 <COMMENT><<EOF>> { 
     fprintf(listing, "Error: End of file inside an unclosed comment.\n");
